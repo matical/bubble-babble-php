@@ -31,12 +31,8 @@ class Encoder
             $firstByte = ord($input[$i]);
             $secondByte = ord($input[$i + 1]);
 
-            $a = ((($firstByte >> 6) & 3) + $checksum) % 6;
-            $b = ($firstByte >> 2) & 15;
-            $c = (($firstByte & 3) + ($checksum / 6)) % 6;
-
-            $d = ($secondByte >> 4) & 15;
-            $e = $secondByte & 15;
+            [$a, $b, $c] = $this->encodeFirstSegment($firstByte, $checksum);
+            [$d, $e] = $this->encodeSecondSegment($secondByte);
 
             // Build tuple T
             // V[a] C[b] V[c] C[d] `-' C[e]
@@ -52,15 +48,13 @@ class Encoder
             $checksum = $this->checksum($checksum, $firstByte, $secondByte);
         }
 
-        if ($length % 2 !== 0) {
-            $firstByte = ord($input[$i]);
-            $a = ((($firstByte >> 6) & 3) + $checksum) % 6;
-            $b = ($firstByte >> 2) & 15;
-            $c = (($firstByte & 3) + ($checksum / 6)) % 6;
-        } else {
+        // Last segment
+        if ($length % 2 === 0) {
             $a = $checksum % 6;
             $b = 16;
             $c = $checksum / 6;
+        } else {
+            [$a, $b, $c] = $this->encodeFirstSegment(ord($input[$i]), $checksum);
         }
 
         $buffer[$tupleMark] = $this->vowels[$a];
@@ -69,6 +63,32 @@ class Encoder
         $buffer[$tupleMark + 3] = $this->consonants[16];
 
         return $buffer;
+    }
+
+    /**
+     * @param $firstByte
+     * @param $checksum
+     * @return array
+     */
+    protected function encodeFirstSegment($firstByte, $checksum): array
+    {
+        $a = ((($firstByte >> 6) & 3) + $checksum) % 6;
+        $b = ($firstByte >> 2) & 15;
+        $c = (($firstByte & 3) + ($checksum / 6)) % 6;
+
+        return [$a, $b, $c];
+    }
+
+    /**
+     * @param $secondByte
+     * @return array
+     */
+    protected function encodeSecondSegment($secondByte): array
+    {
+        $d = ($secondByte >> 4) & 15;
+        $e = $secondByte & 15;
+
+        return [$d, $e];
     }
 
     /**
