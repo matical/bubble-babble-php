@@ -1,0 +1,28 @@
+{
+    "name": "ksmz/bubblebabble",
+    "description": "bubblebabble",
+    "type": "library",
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ksmz\\BubbleBabble\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ksmz\\BubbleBabble\\Tests\\": "tests/"
+        }
+    },
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "ksmz",
+            "email": "ksmz@amatsuka.me"
+        }
+    ]
+}
