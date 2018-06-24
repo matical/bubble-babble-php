@@ -45,7 +45,7 @@ class Decoder
                 // When 'X' is encountered outside of start and end
                 $this->validateMorphedChecksum($morphed, $checksum, $offset);
             } else {
-                // Decode last
+                // Decode last segment
                 $byte = $this->decodeFirstSegment($morphed[0], $morphed[1], $morphed[2], $offset, $checksum);
 
                 $buffer .= chr($byte);
@@ -86,44 +86,45 @@ class Decoder
      */
     protected function decodeFirstSegment($firstByte, $secondByte, $thirdByte, $offset, $checksum)
     {
-        $highMark = ($firstByte - ($checksum % 6) + 6) % 6;
+        $aMark = ($firstByte - ($checksum % 6) + 6) % 6;
 
-        if ($highMark >= 4) {
+        if ($aMark >= 4) {
             throw new InvalidByteOffsetException($offset);
         }
 
+        // C[b] / $bMark
         if ($secondByte > 16) {
             throw new InvalidByteOffsetException($offset + 1);
         }
 
-        $lowMark = ($thirdByte - ($checksum / 6 % 6) + 6) % 6;
+        $cMark = ($thirdByte - ($checksum / 6 % 6) + 6) % 6;
 
-        if ($lowMark >= 4) {
+        if ($cMark >= 4) {
             throw new InvalidByteOffsetException($offset + 2);
         }
 
-        return $highMark << 6 | $secondByte << 2 | $lowMark;
+        return $aMark << 6 | $secondByte << 2 | $cMark;
     }
 
     /**
-     * @param $firstByte
-     * @param $secondByte
+     * @param $dMark
+     * @param $eMark
      * @param $offset
      * @return int
      *
      * @throws \ksmz\BubbleBabble\InvalidByteOffsetException
      */
-    protected function decodeSecondSegment($firstByte, $secondByte, $offset)
+    protected function decodeSecondSegment($dMark, $eMark, $offset)
     {
-        if ($firstByte > 16) {
+        if ($dMark > 16) {
             throw new InvalidByteOffsetException($offset);
         }
 
-        if ($secondByte > 16) {
+        if ($eMark > 16) {
             throw new InvalidByteOffsetException($offset + 2);
         }
 
-        return ($firstByte << 4) | $secondByte;
+        return ($dMark << 4) | $eMark;
     }
 
     /**
@@ -134,14 +135,14 @@ class Decoder
     {
         $tuple = [
             strpos($this->vowels, $input[0]), // V[a]
-            strpos($this->consonants, $input[1]), // V[b]
+            strpos($this->consonants, $input[1]), // C[b]
             strpos($this->vowels, $input[2]), // V[c]
         ];
 
         if (isset($input[3])) {
-            $tuple[] = strpos($this->consonants, $input[3]); // V[d]
+            $tuple[] = strpos($this->consonants, $input[3]); // C[d]
             $tuple[] = '-';
-            $tuple[] = strpos($this->consonants, $input[5]); // V[e]
+            $tuple[] = strpos($this->consonants, $input[5]); // C[e]
         }
 
         return $tuple;
