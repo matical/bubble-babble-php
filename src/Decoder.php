@@ -36,11 +36,11 @@ class Decoder
             $morphed = $this->morphToCharPositions($tuple);
 
             if ($index !== $lastTuple) {
-                $firstByte = $this->decodeFirstSegment($morphed[0], $morphed[1], $morphed[2], $offset, $checksum);
-                $secondByte = $this->decodeSecondSegment($morphed[3], $morphed[5], $offset);
-                $checksum = $this->checksum($checksum, $firstByte, $secondByte);
+                $firstSegment = $this->decodeFirstSegment($morphed[0], $morphed[1], $morphed[2], $offset, $checksum);
+                $secondSegment = $this->decodeSecondSegment($morphed[3], $morphed[5], $offset);
+                $checksum = $this->checksum($checksum, $firstSegment, $secondSegment);
 
-                $buffer .= chr($firstByte) . chr($secondByte);
+                $buffer .= chr($firstSegment) . chr($secondSegment);
             } elseif ($morphed[1] === 16) {
                 // When 'X' is encountered outside of start and end
                 $this->validateMorphedChecksum($morphed, $checksum, $offset);
