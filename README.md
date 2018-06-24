@@ -3,10 +3,14 @@
 [![Coveralls](https://img.shields.io/coveralls/matical/bubble-babble-php.svg?style=flat-square)](https://coveralls.io/github/matical/bubble-babble-php)
 [![StyleCI](https://github.styleci.io/repos/138452518/shield?branch=master)](https://github.styleci.io/repos/138452518)
 
+Encoder/Decoder for BubbleBabble according to [spec](http://wiki.yak.net/589/Bubble_Babble_Encoding.txt).
+
 ## Installation
 `composer require ksmz/bubblebabble`
 
 ## Basic Usage
+> Note: This function is binary safe.
+
 ```php
 use ksmz\BubbleBabble\Factory as BubbleBabble;
 
