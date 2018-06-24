@@ -1,6 +1,6 @@
 {
     "name": "ksmz/bubblebabble",
-    "description": "bubblebabble",
+    "description": "Encoder/Decoder for BubbleBabble",
     "type": "library",
     "require": {
         "php": ">=7.1"
